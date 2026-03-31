@@ -1,43 +1,66 @@
-import { randomUUID } from "crypto";
+/**
+ * Seed script: creates the root admin via Better Auth's internal API.
+ * Run: tsx scripts/create-admin.ts <email> <password>
+ *
+ * Requires the server to be running (or DATABASE_URL in env).
+ * Uses Better Auth's auth.api.signUpEmail to correctly hash the password.
+ */
+import { auth } from "../src/lib/auth";
 import { pool } from "../src/lib/db";
+import { randomUUID } from "crypto";
 
-async function createAdmin(email: string) {
-  const userId = randomUUID();
-  const tenantId = randomUUID(); // Create a default tenant for the admin
-  
+async function createAdmin(email: string, password: string) {
   try {
-    // 1. Create a "Root" Tenant
+    // 1. Create root tenant first
+    const tenantId = randomUUID();
     await pool.query(
-      `INSERT INTO tenants (id, name, slug) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+      `INSERT INTO tenants (id, name, slug) VALUES ($1, $2, $3) ON CONFLICT (slug) DO NOTHING`,
       [tenantId, "Arcigy Root", "arcigy-root"]
     );
 
-    // 2. Insert the User
-    // Note: Better Auth uses its own structure, so we insert into the 'user' table
-    // with role 'admin' and the tenantId we just created.
+    // Get the actual tenant ID (may already exist)
+    const tenantResult = await pool.query(
+      `SELECT id FROM tenants WHERE slug = 'arcigy-root' LIMIT 1`
+    );
+    const actualTenantId = tenantResult.rows[0]?.id;
+
+    // 2. Use Better Auth to create the user (this correctly hashes the password)
+    const response = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name: "Root Admin",
+      },
+    });
+
+    if (!response?.user?.id) {
+      throw new Error("Failed to create user via Better Auth");
+    }
+
+    // 3. Promote to admin and set tenantId
     await pool.query(
-      `INSERT INTO "user" (id, email, name, role, "tenantId", emailVerified, createdAt, updatedAt) 
-       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-      [userId, email, "Root Admin", "admin", tenantId, true]
+      `UPDATE "user" SET role = 'admin', "tenantId" = $1 WHERE id = $2`,
+      [actualTenantId, response.user.id]
     );
 
-    // 3. Set the password? Better Auth stores passwords in 'account' table for credential provider
-    // Normally you'd want to use better-auth's internal hasher but for a quick script:
-    // We'll just print a instruction to use the portal or a more complete script.
-    
-    console.log(`✅ Admin user created: ${email}`);
-    console.log(`✅ Tenant ID: ${tenantId}`);
-    console.log(`⚠️ Password must be set via the 'account' table or reset link.`);
-  } catch (e) {
-    console.error("❌ Failed to create admin:", e);
+    console.log(`✅ Admin user created!`);
+    console.log(`   Email:    ${email}`);
+    console.log(`   User ID:  ${response.user.id}`);
+    console.log(`   Tenant:   ${actualTenantId}`);
+    console.log(`\n🚀 You can now log in at your Railway URL.`);
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("❌ Failed to create admin:", msg);
+    process.exit(1);
   } finally {
-    process.exit();
+    await pool.end();
   }
 }
 
-const [,, email] = process.argv;
-if (!email) {
-  console.log("Usage: bun scripts/create-admin.ts <email> <password>");
+const [,, email, password] = process.argv;
+if (!email || !password) {
+  console.error("Usage: tsx scripts/create-admin.ts <email> <password>");
+  process.exit(1);
 } else {
-  createAdmin(email);
+  createAdmin(email, password);
 }

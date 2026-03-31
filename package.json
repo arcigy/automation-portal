@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "db:migrate": "tsx scripts/migrate.ts",
+    "create:admin": "tsx scripts/create-admin.ts",
     "lint": "eslint"
   },
   "dependencies": {
