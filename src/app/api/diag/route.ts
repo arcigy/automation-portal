@@ -15,8 +15,8 @@ export async function GET() {
   try {
     const res = await pool.query("SELECT 1 as connection_test");
     diag.db = res.rows[0].connection_test === 1 ? "OK" : "ERROR";
-  } catch (e: any) {
-    diag.db = `FAILED: ${e.message}`;
+  } catch (e: unknown) {
+    diag.db = `FAILED: ${e instanceof Error ? e.message : String(e)}`;
   }
 
   return NextResponse.json(diag);
