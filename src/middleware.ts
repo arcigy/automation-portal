@@ -1,8 +1,7 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export async function middleware(_request: NextRequest) {
     // This is a basic session check logic. 
     // In Better Auth, you might need to use getSession(auth) or similar strategy for middleware.
     // However, App Router middleware is tricky with sessions. 

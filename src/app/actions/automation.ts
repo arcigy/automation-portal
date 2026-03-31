@@ -3,9 +3,8 @@
 import { getAutomationModule } from "@/automations/registry";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-export async function runAutomationAction(id: string, input: any) {
+export async function runAutomationAction(id: string, input: unknown) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -15,12 +14,15 @@ export async function runAutomationAction(id: string, input: any) {
   }
 
   const tenantId = session.user.tenantId;
-  const module = getAutomationModule(id);
+  if (!tenantId) {
+    throw new Error("User has no associated tenant");
+  }
+  const automationModule = getAutomationModule(id);
 
-  if (!module) {
+  if (!automationModule) {
     throw new Error("Module not found");
   }
 
   // Execute on the server
-  return await module.run(tenantId, input);
+  return await automationModule.run(tenantId, input);
 }

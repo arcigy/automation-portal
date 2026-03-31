@@ -7,8 +7,8 @@ export interface Log {
   tenant_id: string;
   automation_id: string;
   status: "success" | "error" | "running";
-  input?: any;
-  output?: any;
+  input?: unknown;
+  output?: unknown;
   error?: string;
   duration_ms?: number;
   created_at: string;
@@ -22,7 +22,7 @@ export interface Stats {
 
 export interface RunResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -31,13 +31,13 @@ export interface AutomationModule {
   name: string;
   description?: string;
   type: AutomationType;
-  settings: z.ZodSchema<any>;
-  run(tenantId: string, input?: any): Promise<RunResult>;
+  settings: z.ZodSchema<unknown>;
+  run(tenantId: string, input?: unknown): Promise<RunResult>;
   getLogs(tenantId: string): Promise<Log[]>;
   getStats(tenantId: string): Promise<Stats>;
   ui: {
     dashboard: React.ComponentType<{ tenantId: string }>;
-    form?: React.ComponentType<{ tenantId: string; onSubmit: (data: any) => Promise<void> }>;
+    form?: React.ComponentType<{ tenantId: string; onSubmit: (data: unknown) => Promise<void> }>;
     settings?: React.ComponentType<{ tenantId: string }>;
   };
 }

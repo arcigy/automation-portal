@@ -48,7 +48,7 @@ export default async function DashboardPage() {
                <span className="text-2xl">📦</span>
             </div>
             <h3 className="text-xl font-bold text-gray-900 tracking-tight">Setup Pending</h3>
-            <p className="mt-2 text-gray-500 font-medium max-w-md">Your organization doesn't have any active automations yet. They'll appear here once configured by our team.</p>
+            <p className="mt-2 text-gray-500 font-medium max-w-md">Your organization doesn&apos;t have any active automations yet. They&apos;ll appear here once configured by our team.</p>
           </div>
         ) : (
           availableAutomations.map((automation) => (
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
                   {automation.type === 'automatic' ? '⚡' : automation.type === 'manual' ? '🛠️' : '📝'}
                 </div>
                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ring-inset ${
-                    automation.is_active === false ? "bg-rose-50 text-rose-700 ring-rose-600/20" : "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
+                    "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
                   }`}>
                     {automation.type}
                 </span>

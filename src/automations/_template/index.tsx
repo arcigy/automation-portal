@@ -14,15 +14,15 @@ export const templateModule: AutomationModule = {
     enabled: z.boolean().default(true),
   }),
 
-  async run(tenantId: string, input?: any): Promise<RunResult> {
+  async run(_tenantId: string, _input?: unknown): Promise<RunResult> {
     return { success: true, data: { status: "OK" } };
   },
 
-  async getLogs(tenantId: string): Promise<Log[]> {
+  async getLogs(_tenantId: string): Promise<Log[]> {
     return [];
   },
 
-  async getStats(tenantId: string): Promise<Stats> {
+  async getStats(_tenantId: string): Promise<Stats> {
     return { total_runs: 0, success_rate: 100 };
   },
 
@@ -33,7 +33,7 @@ export const templateModule: AutomationModule = {
         <p className="text-gray-500 text-sm">Tenant: {tenantId}</p>
       </div>
     ),
-    form: ({ tenantId, onSubmit }) => (
+    form: ({ onSubmit }) => (
       <div className="p-4">
         <button 
           onClick={() => onSubmit({ action: "test" })} 
@@ -43,7 +43,7 @@ export const templateModule: AutomationModule = {
         </button>
       </div>
     ),
-    settings: ({ tenantId }) => (
+    settings: () => (
       <div className="p-4"><p className="text-gray-400">Žiadne nastavenia.</p></div>
     ),
   },

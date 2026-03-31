@@ -1,8 +1,7 @@
 import { randomUUID } from "crypto";
 import { pool } from "../src/lib/db";
-import { hash } from "bcrypt"; // Usually better-auth handles this, but for manual creation we can use it
 
-async function createAdmin(email: string, pass: string) {
+async function createAdmin(email: string) {
   const userId = randomUUID();
   const tenantId = randomUUID(); // Create a default tenant for the admin
   
@@ -23,7 +22,6 @@ async function createAdmin(email: string, pass: string) {
     );
 
     // 3. Set the password? Better Auth stores passwords in 'account' table for credential provider
-    const accountId = randomUUID();
     // Normally you'd want to use better-auth's internal hasher but for a quick script:
     // We'll just print a instruction to use the portal or a more complete script.
     
@@ -37,9 +35,9 @@ async function createAdmin(email: string, pass: string) {
   }
 }
 
-const [,, email, pass] = process.argv;
+const [,, email] = process.argv;
 if (!email) {
   console.log("Usage: bun scripts/create-admin.ts <email> <password>");
 } else {
-  createAdmin(email, pass || "admin123");
+  createAdmin(email);
 }

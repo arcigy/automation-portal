@@ -14,7 +14,7 @@ export async function SettingsView({ module, tenantId }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1 border-b pb-4">
-        <h2 className="text-xl font-bold tracking-tight text-gray-900">Nastavenia "{module.name}"</h2>
+        <h2 className="text-xl font-bold tracking-tight text-gray-900">Nastavenia &quot;{module.name}&quot;</h2>
         <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">Upravte parametre tejto automatizácie podľa potreby.</p>
       </header>
       

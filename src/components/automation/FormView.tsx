@@ -14,7 +14,7 @@ interface Props {
  * Visual wrapper for the automation execution area.
  * Uses the inner FormDisplay component to access the context.
  */
-export function FormView({ id, tenantId, name, children }: Props) {
+export function FormView({ id, _tenantId, name, children }: Props & { _tenantId?: string }) {
   return (
     <AutomationFormProvider id={id}>
       <div className="bg-white border border-gray-200 rounded-[40px] shadow-2xl shadow-gray-200/20 overflow-hidden mb-12">
@@ -50,7 +50,7 @@ function FormDisplay({ children }: { children: ReactNode }) {
       </div>
 
       {/* 2. Feedback Message Layer */}
-      {result && (
+      {!!result && (
         <div className="p-8 bg-emerald-50 border border-emerald-100 rounded-3xl animate-in fade-in slide-in-from-top-4 duration-500">
            <div className="flex items-center gap-2 mb-4">
               <span className="text-emerald-600 text-lg">✅</span>

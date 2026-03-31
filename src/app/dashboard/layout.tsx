@@ -16,7 +16,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   // Tenant check - logic from user rules: tenantId should be in session
-  const tenantId = session.user.tenantId;
+  if (!session.user.tenantId) {
+    // Optionally redirect if no tenant, but dashboard page handles this too.
+  }
 
   return (
     <div className="min-h-screen bg-gray-50/10">
