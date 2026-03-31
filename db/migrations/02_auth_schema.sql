@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS "user" (
     "createdAt" TIMESTAMPTZ NOT NULL,
     "updatedAt" TIMESTAMPTZ NOT NULL,
     role TEXT DEFAULT 'user',
+    banned BOOLEAN DEFAULT FALSE,
+    "banReason" TEXT,
+    "banExpires" TIMESTAMPTZ,
     "tenantId" UUID REFERENCES tenants(id) ON DELETE SET NULL
 );
 

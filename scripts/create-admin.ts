@@ -14,8 +14,8 @@ async function createAdmin(email: string, password: string) {
     // 1. Create root tenant first
     const tenantId = randomUUID();
     await pool.query(
-      `INSERT INTO tenants (id, name, slug) VALUES ($1, $2, $3) ON CONFLICT (slug) DO NOTHING`,
-      [tenantId, "Arcigy Root", "arcigy-root"]
+      `INSERT INTO tenants (id, name, slug, email) VALUES ($1, $2, $3, $4) ON CONFLICT (slug) DO NOTHING`,
+      [tenantId, "Arcigy Root", "arcigy-root", email]
     );
 
     // Get the actual tenant ID (may already exist)
@@ -31,10 +31,14 @@ async function createAdmin(email: string, password: string) {
         password,
         name: "Root Admin",
       },
-    });
+      headers: new Headers({
+        "User-Agent": "Admin-Seeder"
+      })
+    }).catch(r => r);
 
-    if (!response?.user?.id) {
-      throw new Error("Failed to create user via Better Auth");
+    if (!response || !response.user?.id) {
+      console.log("Full Better Auth Response:", JSON.stringify(response, null, 2));
+      throw new Error("Failed to create user via Better Auth. See output above.");
     }
 
     // 3. Promote to admin and set tenantId

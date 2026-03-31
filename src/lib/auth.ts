@@ -21,7 +21,6 @@ export const auth = betterAuth({
       tenantId: {
         type: "string",
         required: false,
-        defaultValue: "",
         input: false,
       },
     }
